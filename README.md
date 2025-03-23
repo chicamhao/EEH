@@ -19,7 +19,7 @@ StarterContent/Maps/Minimal_Default
 
 # Prototype features
 - Level creation. <- ?
-- Character movement. <- 
+- ~Character movement~  
 - Object interaction. <- 
   -  Door/key. <-
   -  Puzzle.
