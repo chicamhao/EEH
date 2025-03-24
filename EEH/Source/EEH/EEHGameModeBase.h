@@ -10,7 +10,7 @@
  * 
  */
 UCLASS()
-class UNTITLEDG_API AEEHGameModeBase : public AGameModeBase
+class EEH_API AEEHGameModeBase : public AGameModeBase
 {
 	GENERATED_BODY()
 	
