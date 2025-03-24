@@ -2,6 +2,7 @@
 [Design.](https://docs.google.com/document/d/14pxaU9jh10bZgfLkQ-MZyCCL96f_qAYZ3rTugLFUwBA/edit?tab=t.0)
 
 Gameplay: silent hill p.t + madison + ?
+
 [Game mechanic](https://docs.google.com/document/d/1Y2IKV0c1WI3ByPDBcKHTEfSmWr9vMVX53gyyjMuL_wE/edit?usp=sharing)
 
 
