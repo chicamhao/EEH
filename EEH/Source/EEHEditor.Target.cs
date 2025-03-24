@@ -3,13 +3,13 @@
 using UnrealBuildTool;
 using System.Collections.Generic;
 
-public class UntitledGTarget : TargetRules
+public class EEHEditorTarget : TargetRules
 {
-	public UntitledGTarget( TargetInfo Target) : base(Target)
+	public EEHEditorTarget( TargetInfo Target) : base(Target)
 	{
-		Type = TargetType.Game;
+		Type = TargetType.Editor;
 		DefaultBuildSettings = BuildSettingsVersion.V2;
 		IncludeOrderVersion = EngineIncludeOrderVersion.Unreal5_1;
-		ExtraModuleNames.Add("UntitledG");
+		ExtraModuleNames.Add("EEH");
 	}
 }

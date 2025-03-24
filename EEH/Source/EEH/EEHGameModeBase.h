@@ -4,13 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
-#include "UntitledGGameModeBase.generated.h"
+#include "EEHGameModeBase.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class UNTITLEDG_API AUntitledGGameModeBase : public AGameModeBase
+class UNTITLEDG_API AEEHGameModeBase : public AGameModeBase
 {
 	GENERATED_BODY()
 	
