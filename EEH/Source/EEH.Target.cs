@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 public class EEHTarget : TargetRules
 {
-	public  EEHTarget( TargetInfo Target) : base(Target)
+	public EEHTarget( TargetInfo Target) : base(Target)
 	{
 		Type = TargetType.Game;
 		DefaultBuildSettings = BuildSettingsVersion.V2;
