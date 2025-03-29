@@ -4,16 +4,16 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
-#include "ChamuCharacter.generated.h"
+#include "PlayerCharacter.generated.h"
 
 UCLASS()
-class UNTITLEDG_API AChamuCharacter : public ACharacter
+class EEH_API APlayerCharacter : public ACharacter
 {
 	GENERATED_BODY()
 
 public:
 	// Sets default values for this character's properties
-	AChamuCharacter();
+	APlayerCharacter();
 
 protected:
 	// Called when the game starts or when spawned
