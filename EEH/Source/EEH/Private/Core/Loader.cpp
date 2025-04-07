@@ -24,12 +24,19 @@ void ALoader::Load()
 		{
 			if (Data->Name.Contains(Object->GetActorLabel()))
 			{
-				Object->ChangeMesh(
-					Data->RandomMeshes[
-						FMath::RandRange(0, Data->RandomMeshes.Num() - 1)]);
-				Object->ChangeMaterial(
-					Data->RandomMaterials[
-						FMath::RandRange(0, Data->RandomMaterials.Num() - 1)]);
+				if (auto Index = FMath::RandRange(0, Data->RandomMeshes.Num()) < Data->RandomMeshes.Num())
+				{
+					Object->ChangeMesh(
+						Data->RandomMeshes[Index]);
+
+					Index = FMath::RandRange(0, Data->RandomMaterials.Num() - 1);
+					Object->ChangeMaterial(Data->RandomMaterials[Index]);
+				}
+				else
+				{
+					Object->SetActorHiddenInGame(true);
+					Object->SetActorEnableCollision(false);
+				}
 				break;
 			}
 			UE_LOG(LogTemp, Warning, TEXT("Can't find Data's %s"), *Object->GetActorLabel());
