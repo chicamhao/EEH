@@ -6,9 +6,6 @@
 #include "GameFramework/GameModeBase.h"
 #include "EEHGameModeBase.generated.h"
 
-/**
- * 
- */
 UCLASS()
 class EEH_API AEEHGameModeBase : public AGameModeBase
 {
