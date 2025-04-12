@@ -12,7 +12,7 @@ Story?
 - Software:
   -  Engine: Unreal 5.2.1.
   -  Version control: Sourcetree.
-  -  Modeling/animation: ?
+  -  Modeling/animation: (https://www.fab.com/listings/c20d8785-cee6-4c07-9ee7-6ed8d990fb84)
   -  Timeline/management: ?
   -  Sound: ?
 - Protype playground: 
