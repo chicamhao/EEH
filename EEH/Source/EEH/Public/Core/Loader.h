@@ -29,4 +29,7 @@ public:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "References")
 	TArray<AChangeableObject*> Objects;
+private:
+	int32 RandMesh(const AChangeableObject* Object, const UObjectDataAsset* Data);
+	int32 RandMaterial(const AChangeableObject* Object, const UObjectDataAsset* Data);
 };

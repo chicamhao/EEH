@@ -22,25 +22,29 @@ void ALoader::Load()
 	{
 		for (const auto& Data : RoomDataAsset->Objects)
 		{
-			if (Data->Name.Contains(Object->GetActorLabel()))
-			{
-				if (auto Index = FMath::RandRange(0, Data->RandomMeshes.Num()) < Data->RandomMeshes.Num())
-				{
-					Object->ChangeMesh(
-						Data->RandomMeshes[Index]);
+			if (!Data->Name.Contains(Object->GetActorLabel()))
+				continue;
 
-					Index = FMath::RandRange(0, Data->RandomMaterials.Num() - 1);
-					Object->ChangeMaterial(Data->RandomMaterials[Index]);
-				}
-				else
-				{
-					Object->SetActorHiddenInGame(true);
-					Object->SetActorEnableCollision(false);
-				}
-				break;
+			int32 MeshIndex = MeshIndex = Data->RandMesh(-1);
+			int32 MaterialIndex = Data->RandMaterial(0);
+			
+			// activate object, change mesh & material
+			if (MeshIndex >= 0)
+			{
+				Object->ChangeMesh(Data->GetMesh(MeshIndex));
+				Object->ChangeMaterial(Data->GetMaterial(MaterialIndex));
 			}
-			UE_LOG(LogTemp, Warning, TEXT("Can't find Data's %s"), *Object->GetActorLabel());
+			// deactivate object
+			else
+			{
+				Object->SetActorHiddenInGame(true);
+				Object->SetActorEnableCollision(false);
+			}
+			
+			auto Label = FString::Printf(TEXT("%s%d%d"), *Data->Name, MeshIndex + 1, MaterialIndex + 1);
+			Object->SetActorLabel(Label);
+			break;
 		}
+		UE_LOG(LogTemp, Warning, TEXT("Can't find Data's %s"), *Object->GetActorLabel());
 	}
 }
-
