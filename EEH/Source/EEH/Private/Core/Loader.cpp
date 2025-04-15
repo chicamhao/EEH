@@ -27,21 +27,22 @@ void ALoader::Load()
 
 			int32 MeshIndex = MeshIndex = Data->RandMesh(-1);
 			int32 MaterialIndex = Data->RandMaterial(0);
+			FString Label;
 			
 			// activate object, change mesh & material
 			if (MeshIndex >= 0)
 			{
 				Object->ChangeMesh(Data->GetMesh(MeshIndex));
 				Object->ChangeMaterial(Data->GetMaterial(MaterialIndex));
+				Label = FString::Printf(TEXT("%s%d%d"), *Data->Name, MeshIndex, MaterialIndex);
 			}
 			// deactivate object
 			else
 			{
 				Object->SetActorHiddenInGame(true);
 				Object->SetActorEnableCollision(false);
+				Label = FString::Printf(TEXT("%s-"), *Data->Name);
 			}
-			
-			auto Label = FString::Printf(TEXT("%s%d%d"), *Data->Name, MeshIndex + 1, MaterialIndex + 1);
 			Object->SetActorLabel(Label);
 			break;
 		}
