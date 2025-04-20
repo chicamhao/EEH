@@ -31,5 +31,4 @@ void AInteractableObject::OverlapBegins(UPrimitiveComponent* OverlappedComp, AAc
 void AInteractableObject::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
