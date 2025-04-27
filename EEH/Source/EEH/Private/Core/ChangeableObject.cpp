@@ -11,6 +11,8 @@ AChangeableObject::AChangeableObject()
 void AChangeableObject::BeginPlay()
 {
 	Super::BeginPlay();
+	ChangeMesh(OriginMesh);
+	ChangeMaterial(OriginMaterial);
 }
 
 void AChangeableObject::Tick(float DeltaTime)
