@@ -10,6 +10,12 @@ ALoader::ALoader()
 	PrimaryActorTick.bCanEverTick = true;
 }
 
+void ALoader::OnLoadButtonClicked()
+{
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AChangeableObject::StaticClass(), Objects);
+	Load(CustomRoom);
+}
+
 void ALoader::BeginPlay()
 {
 	Super::BeginPlay();

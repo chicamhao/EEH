@@ -22,6 +22,12 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Setup")
 	UOrganizeDataAsset* OrganizeData;
 
+	UFUNCTION(CallInEditor, Category = "Custom")
+	void OnLoadButtonClicked();
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Custom")
+	int32 CustomRoom;
+	
 protected:
 	virtual void BeginPlay() override;
 
