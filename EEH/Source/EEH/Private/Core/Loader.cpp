@@ -38,15 +38,20 @@ void ALoader::Load(int32 RoomIndex)
 	int32 Index = (RoomIndex + OrganizeData->Rooms.Num()) % OrganizeData->Rooms.Num();
 	const auto& Room = OrganizeData->Rooms[Index];
 	
-	int32 ObjectCount = 0;	
-	for (const auto& Object : Objects)
+	int32 ObjectCount = 0;
+	while (ObjectCount < Room->Quantity)
 	{
-		if (ObjectCount > Room->Quantity) break;
-		if (Object->GetActorLabel().IsEmpty()) continue;
+		// random the change object
+		const auto& Data = Room->Objects[
+			FMath::RandRange(0, Room->Objects.Num() - 1)
+			];
 		
-		for (const auto& Data : Room->Objects)
+		if (Data->Name.IsEmpty()) continue;
+		ObjectCount++;
+
+		for (const auto& Object : Objects)
 		{
-			if (Data->Name.IsEmpty()) continue;
+			if (Object->GetActorLabel().IsEmpty()) continue;
 			if (Data->Name[0] != Object->GetActorLabel()[0]) continue;
 			
 			FString Label;
@@ -71,10 +76,8 @@ void ALoader::Load(int32 RoomIndex)
 			Object->SetActorLabel(Label);
 
 			if (GEngine) GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, *Label);
-			ObjectCount++;
 		}
 	}
-	
 	if (GEngine) GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, *Room->Name);
 }
 

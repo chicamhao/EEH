@@ -11,8 +11,8 @@ AChangeableObject::AChangeableObject()
 void AChangeableObject::BeginPlay()
 {
 	Super::BeginPlay();
-	ChangeMesh(OriginMesh);
-	ChangeMaterial(OriginMaterial);
+	OriginMesh = Mesh->GetStaticMesh();
+	OriginMaterial = Mesh->GetMaterial(0);
 }
 
 void AChangeableObject::Tick(float DeltaTime)
@@ -28,16 +28,10 @@ void AChangeableObject::Tick(float DeltaTime)
 
 void AChangeableObject::ChangeMaterial(UMaterialInterface* NewMaterial) const
 {
-	if (Mesh)
-	{
-		Mesh->SetMaterial(0, NewMaterial);
-	}
+	Mesh->SetMaterial(0, NewMaterial);
 }
 
 void AChangeableObject::ChangeMesh(UStaticMesh* NewMesh) const 
 {
-	if (Mesh)
-	{
-		Mesh->SetStaticMesh(NewMesh);
-	}
+	Mesh->SetStaticMesh(NewMesh);
 }

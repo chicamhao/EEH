@@ -20,13 +20,10 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Origin")
-	UStaticMesh* OriginMesh;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Origin")
-	UMaterialInterface* OriginMaterial;
-
 private:
 	UPROPERTY(VisibleAnywhere)
 	UStaticMeshComponent* Mesh;
+
+	UStaticMesh* OriginMesh;
+    UMaterialInterface* OriginMaterial;
 };
