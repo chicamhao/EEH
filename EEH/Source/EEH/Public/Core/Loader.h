@@ -1,12 +1,12 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include "CoreMinimal.h"
-#include "ChangeableObject.h"
-#include "Data/RoomDataAsset.h"
 #include "GameFramework/Actor.h"
 #include "Loader.generated.h"
+
+class UObjectDataAsset;
+class UOrganizeDataAsset;
+class AChangeableObject;
 
 UCLASS()
 class EEH_API ALoader : public AActor
@@ -15,21 +15,23 @@ class EEH_API ALoader : public AActor
 	
 public:	
 	ALoader();
+	virtual void Tick(float DeltaTime) override;
+	
+	void Load();
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Setup")
+	UOrganizeDataAsset* OrganizeData;
 
 protected:
 	virtual void BeginPlay() override;
 
-public:	
-	virtual void Tick(float DeltaTime) override;
-
-	void Load();
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
-	URoomDataAsset* RoomDataAsset;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "References")
-	TArray<AChangeableObject*> Objects;
 private:
 	int32 RandMesh(const AChangeableObject* Object, const UObjectDataAsset* Data);
 	int32 RandMaterial(const AChangeableObject* Object, const UObjectDataAsset* Data);
+
+	void Load(int32 Room);
+	static bool SetActive(AActor* Object, bool bActive);
+	
+	TArray<AActor*> Objects;
+	int32 CurrentRoom;
 };

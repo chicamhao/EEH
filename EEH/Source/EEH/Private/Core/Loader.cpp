@@ -1,5 +1,10 @@
 #include "Core/Loader.h"
 
+#include "Data/OrganizeDataAsset.h"
+#include "Core/ChangeableObject.h"
+#include "Data/RoomDataAsset.h"
+#include "Kismet/GameplayStatics.h"
+
 ALoader::ALoader()
 {
 	PrimaryActorTick.bCanEverTick = true;
@@ -8,7 +13,8 @@ ALoader::ALoader()
 void ALoader::BeginPlay()
 {
 	Super::BeginPlay();
-	Load();
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AChangeableObject::StaticClass(), Objects);
+	Load(0);
 }
 
 void ALoader::Tick(float DeltaTime)
@@ -18,34 +24,54 @@ void ALoader::Tick(float DeltaTime)
 
 void ALoader::Load()
 {
+	Load(++CurrentRoom);
+}
+
+void ALoader::Load(int32 RoomIndex)
+{
+	int32 Index = (RoomIndex + OrganizeData->Rooms.Num()) % OrganizeData->Rooms.Num();
+	const auto& Room = OrganizeData->Rooms[Index];
+	
 	for (const auto& Object : Objects)
 	{
-		for (const auto& Data : RoomDataAsset->Objects)
+		if (Object == nullptr or Object->GetActorLabel().IsEmpty()) continue;
+		
+		for (const auto& Data : Room->Objects)
 		{
-			if (!Data->Name.Contains(Object->GetActorLabel()))
-				continue;
+			if (Data->Name.IsEmpty()) continue;
+			if (Data->Name[0] != Object->GetActorLabel()[0]) continue;
 
 			int32 MeshIndex = MeshIndex = Data->RandMesh(-1);
-			int32 MaterialIndex = Data->RandMaterial(0);
+			const int32 MaterialIndex = Data->RandMaterial(0);
 			FString Label;
-			
+				
 			// activate object, change mesh & material
-			if (MeshIndex >= 0)
+			if (SetActive(Object, MeshIndex >= 0))
 			{
-				Object->ChangeMesh(Data->GetMesh(MeshIndex));
-				Object->ChangeMaterial(Data->GetMaterial(MaterialIndex));
+				auto* Changeable = Cast<AChangeableObject>(Object);
+				Changeable->ChangeMesh(Data->GetMesh(MeshIndex));
+				Changeable->ChangeMaterial(Data->GetMaterial(MaterialIndex));
 				Label = FString::Printf(TEXT("%s%d%d"), *Data->Name, MeshIndex, MaterialIndex);
 			}
 			// deactivate object
 			else
 			{
-				Object->SetActorHiddenInGame(true);
-				Object->SetActorEnableCollision(false);
 				Label = FString::Printf(TEXT("%s-"), *Data->Name);
 			}
 			Object->SetActorLabel(Label);
+
+			if (GEngine) GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, *Label);
 			break;
 		}
-		UE_LOG(LogTemp, Warning, TEXT("Can't find Data's %s"), *Object->GetActorLabel());
+		UE_LOG(LogTemp, Warning, TEXT("Can't find Data of %s"), *Object->GetActorLabel());
 	}
+	
+	if (GEngine) GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, *Room->Name);
+}
+
+bool ALoader::SetActive(AActor* Object, bool bActive)
+{
+	Object->SetActorHiddenInGame(!bActive);
+	Object->SetActorEnableCollision(bActive);
+	return bActive;
 }
