@@ -36,8 +36,10 @@ private:
 	int32 RandMaterial(const AChangeableObject* Object, const UObjectDataAsset* Data);
 
 	void Load(int32 Room);
-	static bool SetActive(AActor* Object, bool bActive);
-	
+	static void SetActive(AActor* Object, bool bActive);
+	static void Change(UObjectDataAsset* Data, const AChangeableObject* Object,
+		int32& MeshIndex, int32& MaterialIndex);
+
 	TArray<AActor*> Objects;
 	int32 CurrentRoom;
 };

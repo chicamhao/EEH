@@ -5,7 +5,7 @@
 #include "Data/RoomDataAsset.h"
 #include "Kismet/GameplayStatics.h"
 
-ALoader::ALoader()
+ALoader::ALoader(): OrganizeData(nullptr), CustomRoom(0), CurrentRoom(0)
 {
 	PrimaryActorTick.bCanEverTick = true;
 }
@@ -38,28 +38,32 @@ void ALoader::Load(int32 RoomIndex)
 	int32 Index = (RoomIndex + OrganizeData->Rooms.Num()) % OrganizeData->Rooms.Num();
 	const auto& Room = OrganizeData->Rooms[Index];
 	
+	int32 ObjectCount = 0;	
 	for (const auto& Object : Objects)
 	{
-		if (Object == nullptr or Object->GetActorLabel().IsEmpty()) continue;
+		if (ObjectCount > Room->Quantity) break;
+		if (Object->GetActorLabel().IsEmpty()) continue;
 		
 		for (const auto& Data : Room->Objects)
 		{
 			if (Data->Name.IsEmpty()) continue;
 			if (Data->Name[0] != Object->GetActorLabel()[0]) continue;
-
-			int32 MeshIndex = MeshIndex = Data->RandMesh(-1);
-			const int32 MaterialIndex = Data->RandMaterial(0);
+			
 			FString Label;
-				
-			// activate object, change mesh & material
-			if (SetActive(Object, MeshIndex >= 0))
+			const bool bActive = Data->RandMesh(-1) >= 0;
+
+			// show/hide object
+			SetActive(Object, bActive);
+			
+			// change mesh & material
+			if (bActive)
 			{
-				auto* Changeable = Cast<AChangeableObject>(Object);
-				Changeable->ChangeMesh(Data->GetMesh(MeshIndex));
-				Changeable->ChangeMaterial(Data->GetMaterial(MaterialIndex));
+				int32 MaterialIndex = 0;
+				int32 MeshIndex = 0;
+				Change(Data, Cast<AChangeableObject>(Object), MeshIndex, MaterialIndex);
+
 				Label = FString::Printf(TEXT("%s%d%d"), *Data->Name, MeshIndex, MaterialIndex);
 			}
-			// deactivate object
 			else
 			{
 				Label = FString::Printf(TEXT("%s-"), *Data->Name);
@@ -67,17 +71,34 @@ void ALoader::Load(int32 RoomIndex)
 			Object->SetActorLabel(Label);
 
 			if (GEngine) GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, *Label);
-			break;
+			ObjectCount++;
 		}
-		UE_LOG(LogTemp, Warning, TEXT("Can't find Data of %s"), *Object->GetActorLabel());
 	}
 	
 	if (GEngine) GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, *Room->Name);
 }
 
-bool ALoader::SetActive(AActor* Object, bool bActive)
+void ALoader::SetActive(AActor* Object, bool bActive)
 {
 	Object->SetActorHiddenInGame(!bActive);
 	Object->SetActorEnableCollision(bActive);
-	return bActive;
+}
+
+void ALoader::Change(UObjectDataAsset* Data, const AChangeableObject* Object,
+	int32& MeshIndex, int32& MaterialIndex)
+{
+	UStaticMesh* NewMesh;
+	UMaterialInterface* NewMaterial;
+	do 
+	{
+		MeshIndex = Data->RandMesh(0);
+		NewMesh = Data->GetMesh(MeshIndex);
+		
+		MaterialIndex = Data->RandMaterial(0);
+		NewMaterial = Data->GetMaterial(MaterialIndex);
+	}
+	while (!Object->Validate(NewMesh, NewMaterial));
+
+	Object->ChangeMesh(NewMesh);
+	Object->ChangeMaterial(NewMaterial);
 }

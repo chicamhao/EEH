@@ -12,11 +12,19 @@ class EEH_API AChangeableObject : public AActor
 public:	
 	AChangeableObject();
 	virtual void Tick(float DeltaTime) override;
-	void ChangeMesh(UStaticMesh* NewMesh);
-	void ChangeMaterial(UMaterialInterface* NewMaterial);
+	
+	bool Validate(const UStaticMesh* NewMesh, const UMaterialInterface* NewMaterial) const;
+	void ChangeMesh(UStaticMesh* NewMesh) const;
+	void ChangeMaterial(UMaterialInterface* NewMaterial) const;
 
 protected:
 	virtual void BeginPlay() override;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Origin")
+	UStaticMesh* OriginMesh;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Origin")
+	UMaterialInterface* OriginMaterial;
 
 private:
 	UPROPERTY(VisibleAnywhere)

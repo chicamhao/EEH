@@ -18,7 +18,13 @@ void AChangeableObject::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
-void AChangeableObject::ChangeMaterial(UMaterialInterface* NewMaterial)
+ bool AChangeableObject::Validate(const UStaticMesh* NewMesh, const UMaterialInterface* NewMaterial) const
+ {
+ 	if (NewMaterial == OriginMaterial && NewMesh == OriginMesh) return false;
+	return true;
+ }
+
+void AChangeableObject::ChangeMaterial(UMaterialInterface* NewMaterial) const
 {
 	if (Mesh)
 	{
@@ -26,7 +32,7 @@ void AChangeableObject::ChangeMaterial(UMaterialInterface* NewMaterial)
 	}
 }
 
-void AChangeableObject::ChangeMesh(UStaticMesh* NewMesh)
+void AChangeableObject::ChangeMesh(UStaticMesh* NewMesh) const 
 {
 	if (Mesh)
 	{
