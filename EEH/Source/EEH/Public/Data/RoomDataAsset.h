@@ -11,8 +11,11 @@ class EEH_API URoomDataAsset : public UDataAsset
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Data")
-	FString Name;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	FString Name = "Room";
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	int32 Quantity = 1;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TArray<UObjectDataAsset*> Objects;

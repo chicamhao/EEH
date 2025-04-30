@@ -1,10 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "Core/ChangeableObject.h"
-
-#include "InterchangeFactoryBase.h"
-#include "VisualizeTexture.h"
 
 AChangeableObject::AChangeableObject()
 {
@@ -17,6 +11,8 @@ AChangeableObject::AChangeableObject()
 void AChangeableObject::BeginPlay()
 {
 	Super::BeginPlay();
+	OriginMesh = Mesh->GetStaticMesh();
+	OriginMaterial = Mesh->GetMaterial(0);
 }
 
 void AChangeableObject::Tick(float DeltaTime)
@@ -24,18 +20,19 @@ void AChangeableObject::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
-void AChangeableObject::ChangeMaterial(UMaterialInterface* NewMaterial)
+bool AChangeableObject::Validate(const UStaticMesh* NewMesh, const UMaterialInterface* NewMaterial) const
 {
-	if (Mesh)
-	{
-		Mesh->SetMaterial(0, NewMaterial);
-	}
+	// same visual 
+	if (NewMaterial == OriginMaterial && NewMesh == OriginMesh) return false;
+	return true;
 }
 
-void AChangeableObject::ChangeMesh(UStaticMesh* NewMesh)
+void AChangeableObject::ChangeMaterial(UMaterialInterface* NewMaterial) const
 {
-	if (Mesh)
-	{
-		Mesh->SetStaticMesh(NewMesh);
-	}
+	Mesh->SetMaterial(0, NewMaterial);
+}
+
+void AChangeableObject::ChangeMesh(UStaticMesh* NewMesh) const
+{
+	Mesh->SetStaticMesh(NewMesh);
 }

@@ -1,5 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include "CoreMinimal.h"
@@ -14,8 +12,10 @@ class EEH_API AChangeableObject : public AActor
 public:	
 	AChangeableObject();
 	virtual void Tick(float DeltaTime) override;
-	void ChangeMesh(UStaticMesh* NewMesh);
-	void ChangeMaterial(UMaterialInterface* NewMaterial);
+
+	bool Validate(const UStaticMesh* NewMesh, const UMaterialInterface* NewMaterial) const;
+	void ChangeMesh(UStaticMesh* NewMesh) const;
+	void ChangeMaterial(UMaterialInterface* NewMaterial) const;
 
 protected:
 	virtual void BeginPlay() override;
@@ -23,4 +23,7 @@ protected:
 private:
 	UPROPERTY(VisibleAnywhere)
 	UStaticMeshComponent* Mesh;
+
+	UStaticMesh* OriginMesh;
+	UMaterialInterface* OriginMaterial;
 };
