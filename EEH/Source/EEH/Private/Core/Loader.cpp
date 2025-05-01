@@ -117,16 +117,14 @@ void ALoader::SetActive(AActor* Actor, bool bActive)
 	Actor->SetActorHiddenInGame(!bActive);
 	Actor->SetActorEnableCollision(bActive);
 
-	TArray<AActor*> ActorChilds;
-	Actor->GetAttachedActors(ActorChilds);
-	for (const auto* Child : ActorChilds)
+	if (UMeshComponent* Mesh = Cast<UMeshComponent>(Actor->GetRootComponent()))
 	{
-		if (UMeshComponent* Mesh = Cast<UMeshComponent>(Child->GetRootComponent()))
-		{
-			Mesh->SetCollisionEnabled(bActive 
-                ? ECollisionEnabled::QueryAndPhysics 
-                : ECollisionEnabled::NoCollision);
-		}
+		Mesh->SetVisibility(bActive, true);
+		Mesh->SetHiddenInGame(!bActive, true);
+
+		Mesh->SetCollisionEnabled(bActive 
+			? ECollisionEnabled::QueryAndPhysics 
+			: ECollisionEnabled::NoCollision);
 	}
 }
 
