@@ -17,13 +17,20 @@ public:
 	void ChangeMesh(UStaticMesh* NewMesh) const;
 	void ChangeMaterial(UMaterialInterface* NewMaterial) const;
 
+	void SelectObject() const;
+	void DeselectObject() const;
+	bool IsSelected() const;
+ 	
 protected:
 	virtual void BeginPlay() override;
 
-private:
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(EditAnywhere)
 	UStaticMeshComponent* Mesh;
 
+	UPROPERTY(EditAnywhere)
+	UDecalComponent* Decal;
+	
+private:	
 	UStaticMesh* OriginMesh;
 	UMaterialInterface* OriginMaterial;
 };

@@ -15,6 +15,9 @@ public:
 	FString Name = "Room";
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	TArray<FString> Containers;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	int32 Quantity = 1;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)

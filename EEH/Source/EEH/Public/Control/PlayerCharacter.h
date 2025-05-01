@@ -31,4 +31,5 @@ private:
 	void MoveRight(const float Value);
 	void Turn(const float Value);
 	void LookUp(const float Value);
+	void SelectObject();
 };

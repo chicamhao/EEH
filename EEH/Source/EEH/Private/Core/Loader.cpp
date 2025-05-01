@@ -1,5 +1,7 @@
 #include "Core/Loader.h"
 
+#include "Container.h"
+#include "Components/SlateWrapperTypes.h"
 #include "Core/ChangeableObject.h"
 #include "Data/OrganizeDataAsset.h"
 #include "Kismet/GameplayStatics.h"
@@ -14,7 +16,10 @@ void ALoader::BeginPlay()
 {
 	Super::BeginPlay();
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AChangeableObject::StaticClass(), Objects);
-	Load(0);
+	LoadObjects(CurrentRoomIndex);
+
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AContainer::StaticClass(), Containers);
+	LoadContainers(CurrentRoomIndex);
 }
 
 void ALoader::Tick(float DeltaTime)
@@ -25,17 +30,21 @@ void ALoader::Tick(float DeltaTime)
 void ALoader::LoadCustom()
 {
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AChangeableObject::StaticClass(), Objects);
-	Load(CustomRoom);
+	LoadObjects(CustomRoom);
+
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AContainer::StaticClass(), Containers);
+	LoadContainers(CustomRoom);
 }
 
 void ALoader::Load()
 {
-	Load(++CurrentRoomIndex);
+	LoadObjects(++CurrentRoomIndex);
+	LoadContainers(CurrentRoomIndex);
 }
 
-void ALoader::Load(int32 RoomIndex)
+void ALoader::LoadObjects(const int32 RoomIndex)
 {
-	int32 SafeIndex = (RoomIndex + OrganizeData->Rooms.Num()) % OrganizeData->Rooms.Num();
+	const int32 SafeIndex = (RoomIndex + OrganizeData->Rooms.Num()) % OrganizeData->Rooms.Num();
 	const auto& Room = OrganizeData->Rooms[SafeIndex];
 	
 	if (Room->Quantity == 0) return;
@@ -52,7 +61,6 @@ void ALoader::Load(int32 RoomIndex)
 		
 		for (const auto& Object : Objects)
 		{
-
 			if (Object == nullptr or Object->GetActorLabel().IsEmpty()) continue;
 			if (Data->Name[0] != Object->GetActorLabel()[0]) continue;
 
@@ -78,14 +86,49 @@ void ALoader::Load(int32 RoomIndex)
 	if (GEngine) GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, *Room->Name);
 }
 
-void ALoader::SetActive(AActor* Object, bool bActive) const
+void ALoader::LoadContainers(int32 RoomIndex)
 {
-	Object->SetActorHiddenInGame(!bActive);
-    Object->SetActorEnableCollision(bActive);
+	const int32 SafeIndex = (RoomIndex + OrganizeData->Rooms.Num()) % OrganizeData->Rooms.Num();
+	const auto& Room = OrganizeData->Rooms[SafeIndex];
+	
+	// load containers
+	for (const auto& Container : Containers)
+	{
+		bool bActivate = false;
+		for (const auto ContainerName : Room->Containers)
+		{
+			if (ContainerName.IsEmpty()) continue;
+			if (ContainerName[0] == Container->GetActorLabel()[0])
+			{
+				SetActive(Container, true);
+				bActivate = true;
+				break;
+			}
+		}
+		if (!bActivate)
+		{
+			SetActive(Container, false);
+		}
+	}
 }
 
-void ALoader::Change(UObjectDataAsset* Data, AChangeableObject* Object,
-	int32& MeshIndex, int32& MaterialIndex)
+void ALoader::SetActive(AActor* Actor, bool bActive)
+{
+	Actor->SetActorHiddenInGame(!bActive);
+	Actor->SetActorEnableCollision(bActive);
+
+	if (UMeshComponent* Mesh = Cast<UMeshComponent>(Actor->GetRootComponent()))
+	{
+		Mesh->SetVisibility(bActive, true);
+		Mesh->SetHiddenInGame(!bActive, true);
+
+		Mesh->SetCollisionEnabled(bActive 
+			? ECollisionEnabled::QueryAndPhysics 
+			: ECollisionEnabled::NoCollision);
+	}
+}
+
+void ALoader::Change(UObjectDataAsset* Data, AChangeableObject* Object, int32& MeshIndex, int32& MaterialIndex)
 {
 	UStaticMesh* NewMesh;
 	UMaterialInterface* NewMaterial;
