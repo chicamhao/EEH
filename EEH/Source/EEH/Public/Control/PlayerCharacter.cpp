@@ -3,6 +3,10 @@
 
 #include "PlayerCharacter.h"
 
+#include "Core/ChangeableObject.h"
+#include "Kismet/GameplayStatics.h"
+#include "Kismet/KismetSystemLibrary.h"
+
 // Sets default values
 APlayerCharacter::APlayerCharacter()
 {
@@ -33,6 +37,7 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	PlayerInputComponent->BindAxis(FName("Right"), this, &APlayerCharacter::MoveRight);
 	PlayerInputComponent->BindAxis(FName("Turn"), this, &APlayerCharacter::Turn);
 	PlayerInputComponent->BindAxis(FName("LookUp"), this, &APlayerCharacter::LookUp);
+	PlayerInputComponent->BindAction(FName("SelectObject"), IE_Pressed, this, &APlayerCharacter::SelectObject);
 }
 
 void APlayerCharacter::MoveForward(const float Value)
@@ -59,4 +64,38 @@ void APlayerCharacter::LookUp(const float Value)
 void APlayerCharacter::Turn(const float Value)
 {
 	AddControllerYawInput(Value);
+}
+
+void APlayerCharacter::SelectObject()
+{
+	TArray<AActor*> Objects;
+	const TArray<AActor*> IgnoreObjects;
+
+	TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes;
+	ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECC_WorldDynamic));
+
+	FHitResult HitResult;
+	
+	const APlayerCameraManager* Camera = UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0);
+	const bool bHit = UKismetSystemLibrary::LineTraceSingleForObjects(
+		this,
+		Camera->GetCameraLocation(),
+		Camera->GetActorForwardVector() * 500.f,
+		ObjectTypes,
+		false,
+		IgnoreObjects,
+		EDrawDebugTrace::ForDuration,
+		HitResult,
+		true
+		);
+	if (bHit)
+	{
+		for (const AActor* Actor: Objects)
+		{
+			if (const AChangeableObject* Object = Cast<AChangeableObject>(Actor); Object != nullptr)
+			{
+				Object->SelectObject();
+			}
+		}
+	}
 }

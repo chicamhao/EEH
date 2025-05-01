@@ -4,6 +4,7 @@
 #include "GameFramework/Actor.h"
 #include "Loader.generated.h"
 
+class URoomDataAsset;
 class AChangeableObject;
 class UObjectDataAsset;
 class UOrganizeDataAsset;
@@ -34,11 +35,14 @@ protected:
 private:
 	int32 RandMesh(const AChangeableObject* Object, const UObjectDataAsset* Data);
     int32 RandMaterial(const AChangeableObject* Object, const UObjectDataAsset* Data);
-	void Load(int32 RoomIndex);
-	void SetActive(AActor* Actor, bool bActive) const;
-	static void Change(UObjectDataAsset* Data, AChangeableObject* Object,
-	                   int32& MeshIndex, int32& MaterialIndex);
-	
-	TArray<AActor*> Objects;
+
+	void LoadObjects(int32 RoomIndex);
+	void LoadContainers(int32 RoomIndex);
+
+	static void SetActive(AActor* Actor, bool bActive);
+	static void Change(UObjectDataAsset* Data, AChangeableObject* Object, int32& MeshIndex, int32& MaterialIndex);
+
 	int32 CurrentRoomIndex;
+	TArray<AActor*> Objects;
+	TArray<AActor*> Containers;
 };

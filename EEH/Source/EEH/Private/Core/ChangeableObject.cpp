@@ -1,11 +1,15 @@
 #include "Core/ChangeableObject.h"
 
+#include "Components/DecalComponent.h"
+
 AChangeableObject::AChangeableObject()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
 	RootComponent = Mesh;
+
+	Decal = CreateDefaultSubobject<UDecalComponent>(TEXT("Decal"));
 }
 
 void AChangeableObject::BeginPlay()
@@ -35,4 +39,19 @@ void AChangeableObject::ChangeMaterial(UMaterialInterface* NewMaterial) const
 void AChangeableObject::ChangeMesh(UStaticMesh* NewMesh) const
 {
 	Mesh->SetStaticMesh(NewMesh);
+}
+
+void AChangeableObject::SelectObject() const
+{
+	Decal->SetVisibility(true);
+}
+
+void AChangeableObject::DeselectObject() const
+{
+	Decal->SetVisibility(false);
+}
+
+bool AChangeableObject::IsSelected() const
+{
+	return Decal->IsVisible();
 }
