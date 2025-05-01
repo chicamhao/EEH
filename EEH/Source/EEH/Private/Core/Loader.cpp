@@ -126,6 +126,18 @@ void ALoader::SetActive(AActor* Actor, bool bActive)
 			? ECollisionEnabled::QueryAndPhysics 
 			: ECollisionEnabled::NoCollision);
 	}
+	
+	TArray<AActor*> ActorChilds;
+	Actor->GetAttachedActors(ActorChilds);
+	for (const auto* Child : ActorChilds)
+	{
+		if (UMeshComponent* Mesh = Cast<UMeshComponent>(Child->GetRootComponent()))
+		{
+			Mesh->SetCollisionEnabled(bActive 
+                ? ECollisionEnabled::QueryAndPhysics 
+                : ECollisionEnabled::NoCollision);
+		}
+	}
 }
 
 void ALoader::Change(UObjectDataAsset* Data, AChangeableObject* Object, int32& MeshIndex, int32& MaterialIndex)
