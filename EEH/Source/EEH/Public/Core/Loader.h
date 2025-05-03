@@ -19,6 +19,7 @@ public:
 	virtual void Tick(float DeltaTime) override;
 	
 	void Load();
+	void OnCaptured(AChangeableObject* Object);
 
 	UFUNCTION(CallInEditor, Category = "Custom")
 	void LoadCustom();
@@ -28,6 +29,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Setup")
 	UOrganizeDataAsset* OrganizeData;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Setup")
+	AActor* DoorToNextRoom;
 	
 protected:
 	virtual void BeginPlay() override;
@@ -43,6 +47,8 @@ private:
 	static void Change(UObjectDataAsset* Data, AChangeableObject* Object, int32& MeshIndex, int32& MaterialIndex);
 
 	int32 CurrentRoomIndex;
+	URoomDataAsset* CurrentRoom;
 	TArray<AActor*> Objects;
 	TArray<AActor*> Containers;
+	TArray<AChangeableObject*> CapturedRightObjects;
 };
