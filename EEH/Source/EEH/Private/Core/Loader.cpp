@@ -42,21 +42,48 @@ void ALoader::Load()
 	LoadContainers(CurrentRoomIndex);
 }
 
+void ALoader::OnCaptured(AChangeableObject* Object)
+{
+	CapturedRightObjects.Add(Object);
+	if (CapturedRightObjects.Num() >= CurrentRoom->Quantity)
+	{
+		if (GEngine) GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::White,
+			*FString::Printf(TEXT("All changed objects captured, door opened!")));
+
+        SetActive(DoorToNextRoom,false);		
+	}
+}
+
 void ALoader::LoadObjects(const int32 RoomIndex)
 {
-	const int32 SafeIndex = (RoomIndex + OrganizeData->Rooms.Num()) % OrganizeData->Rooms.Num();
-	const auto& Room = OrganizeData->Rooms[SafeIndex];
+	SetActive(DoorToNextRoom, true);
+	for (auto* Object : Objects)
+	{
+		if (auto* Changeable = Cast<AChangeableObject>(Object))
+		{
+			Changeable->Initialize();
+		}
+	}
 	
-	if (Room->Quantity == 0) return;
+	const int32 SafeIndex = (RoomIndex + OrganizeData->Rooms.Num()) % OrganizeData->Rooms.Num();
+	CurrentRoom = OrganizeData->Rooms[SafeIndex];
+	
+	if (CurrentRoom->Quantity == 0) return;
 	
 	int32 ObjectCount = 0;
-	while (ObjectCount < Room->Quantity)
+	TArray<int32> ObjectIndexes;
+	while (ObjectCount < CurrentRoom->Quantity)
 	{
-		const auto& Data = Room->Objects[
-			FMath::RandRange(0, Room->Objects.Num() - 1)
-			];
+		int32 ObjectIndex = FMath::RandRange(0, CurrentRoom->Objects.Num() - 1);
+		if (ObjectIndexes.Contains(ObjectIndex))
+		{
+			continue;
+		}
+		ObjectIndexes.Add(ObjectIndex);
 
-		if (Data->Name.IsEmpty()) continue;
+		const auto& Data = CurrentRoom->Objects[ObjectIndex];
+
+		if (Data == nullptr or Data->Name.IsEmpty()) continue;
 		ObjectCount++;
 		
 		for (const auto& Object : Objects)
@@ -64,7 +91,7 @@ void ALoader::LoadObjects(const int32 RoomIndex)
 			if (Object == nullptr or Object->GetActorLabel().IsEmpty()) continue;
 			if (Data->Name[0] != Object->GetActorLabel()[0]) continue;
 
-			const bool bActive = Data->RandMesh(-1) >= 0;
+			const bool bActive = Data->RandMesh(0) >= 0;
 			SetActive(Object, bActive);
 			
 			FString Label;
@@ -79,11 +106,14 @@ void ALoader::LoadObjects(const int32 RoomIndex)
 			{
 				Label = FString::Printf(TEXT("%s-"), *Data->Name);
 			}
+			if (GEngine) GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::White,
+						*FString::Printf(TEXT("Changed %s to %s"), *Object->GetActorLabel(), *Label));
+			
 			Object->SetActorLabel(Label);
-			if (GEngine) GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, *Label);
 		}
 	}
-	if (GEngine) GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, *Room->Name);
+	if (GEngine) GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green,
+		*FString::Printf(TEXT("Room %s has %d/%d objects changed:"), *CurrentRoom->Name, ObjectCount, CurrentRoom->Objects.Num()));
 }
 
 void ALoader::LoadContainers(int32 RoomIndex)
@@ -114,6 +144,7 @@ void ALoader::LoadContainers(int32 RoomIndex)
 
 void ALoader::SetActive(AActor* Actor, bool bActive)
 {
+	if (Actor == nullptr) return;
 	Actor->SetActorHiddenInGame(!bActive);
 	Actor->SetActorEnableCollision(bActive);
 

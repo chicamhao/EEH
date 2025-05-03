@@ -6,6 +6,8 @@
 #include "GameFramework/Character.h"
 #include "PlayerCharacter.generated.h"
 
+class AChangeableObject;
+
 UCLASS()
 class EEH_API APlayerCharacter : public ACharacter
 {
@@ -32,4 +34,8 @@ private:
 	void Turn(const float Value);
 	void LookUp(const float Value);
 	void SelectObject();
+	void CaptureObject();
+	
+	FTimerHandle MyTimerHandle;
+	AChangeableObject* SelectedObject;
 };
